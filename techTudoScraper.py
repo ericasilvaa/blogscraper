@@ -80,7 +80,7 @@ def carregar_mais_noticias(driver, qtd_noticias):
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'div[class^="load-more"] a'))
             )
             driver.execute_script("arguments[0].click();", botao_carregar_mais)
-            time.sleep(random.randint(3, 5))
+            time.sleep(random.randint(5, 10))
             lista_noticias = WebDriverWait(driver, 10).until(
                 EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[data-type="materia"]'))
             )
@@ -106,32 +106,31 @@ def listar_noticias_categoria(categoria, categoria_url, qtd_noticias, chrome_opt
     
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, 'div[class^="load-more"] a'))
-        )
+    )
     carregar_mais_noticias(driver, qtd_noticias)
     
-    lista_noticias = WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[data-type="materia"]'))
-        )
+    time.sleep(30)
+    
+    page_source = driver.page_source
+    soup = BeautifulSoup(page_source, 'html.parser')
+    lista_noticias = soup.select('div[data-type="materia"]')
     logger.info(f'Quantidade de notícias encontradas: {len(lista_noticias)}')
 
     logger.info('Capturando dados das notícias...')
-    for noticia in lista_noticias[:qtd_noticias]:
-        time.sleep(random.randint(3, 5))
+    for i, noticia in enumerate(lista_noticias[:qtd_noticias], start=1):
         try:
-            id_noticia = noticia.find_element(By.CSS_SELECTOR, 'div[class^="feed-post"]').get_attribute('id')
-            titulo = noticia.find_element(By.CSS_SELECTOR, 'h2 a').text.strip()
-            link = noticia.find_element(By.CSS_SELECTOR, 'h2 a').get_attribute('href')
-            resumo = noticia.find_element(By.CSS_SELECTOR, 'p[class="feed-post-body-resumo"]').text.strip()
-            imagem = noticia.find_element(By.CSS_SELECTOR, 'img').get_attribute('src')
+            id_noticia = noticia.select_one('div[class^="feed-post"]').get('id')
+            titulo = noticia.select_one('div[class*="title"] a').get_text(strip=True)
+            logger.info(f'Capturando notícia {i}/{len(lista_noticias[:qtd_noticias])}: {titulo}')
+            link = noticia.select_one('div[class*="title"] a').get('href')
+            resumo = noticia.select_one('p[class*="resumo"]').get_text(strip=True)
             noticias[id_noticia] = {
                 'titulo': titulo,
                 'resumo': resumo,
-                'link': link,
-                'imagem': imagem
-                }
-            time.sleep(random.randint(1, 3))
-        except:
-            print(f'Erro ao capturar notícia: {noticia}')
+                'link': link
+            }
+        except Exception as e:
+            logger.error(f'Erro ao capturar notícia: {noticia}, erro: {e}')
     driver.quit()
     return noticias
 
@@ -144,7 +143,7 @@ if __name__ == '__main__':
     chrome_options = configurar_chrome_driver()
     categorias = listar_categorias()
     for i, (categoria, url) in enumerate(categorias.items(), start=1):
-        print(f'{i} - {categoria}')
+        print(f'{i} - {categoria} | {url}')
     
     try:
         categoria_escolhida_index = int(input('Escolha o número de uma categoria: '))
