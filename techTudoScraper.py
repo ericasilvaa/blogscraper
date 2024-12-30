@@ -145,7 +145,7 @@ def salvar_dados_noticia(url_noticia):
             autor = soup.select_one('address[itemprop="author"] meta[itemprop="name"]').get('content')
             descricao = soup.select_one('h2[itemprop="alternativeHeadline"]').get_text(strip=True)
             lista_conteudo = soup.select('div[class*="content-text"]')
-            conteudo = ''.join([p.get_text(strip=True) for p in lista_conteudo])
+            conteudo = ''.join([p.get_text() for p in lista_conteudo]).strip()
             return {
                 'titulo': titulo,
                 'data_publicacao': data_publicacao,
@@ -176,8 +176,8 @@ if __name__ == '__main__':
             qtd_noticias = int(input('Quantidade de notícias a serem capturadas: '))
             links_noticias = listar_noticias_categoria(categoria_escolhida, categorias[categoria_escolhida], qtd_noticias, chrome_options)
             noticias = {}
-            for id_noticia, dados_noticia in links_noticias.items():
-                logger.info(f'Acessando notícia: {dados_noticia["titulo"]}')
+            for i, (id_noticia, dados_noticia) in enumerate(links_noticias.items(), start=1):
+                logger.info(f'Coletando notícia {i}/{len(links_noticias)}: {dados_noticia["titulo"]}')
                 dados_completos = salvar_dados_noticia(dados_noticia['link'])
                 if dados_completos:
                     noticias[id_noticia] = {**dados_noticia, **dados_completos}
