@@ -25,3 +25,45 @@ techTudoScraper é uma aplicação em Python para coletar e organizar notícias 
    ```bash
    git clone https://github.com/odoricoveloso/techTudoScraper.git
    cd techTudoScraper
+
+2. Crie um ambiente virtual (opcional, mas recomendado):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # No Windows: venv\Scripts\activate
+   ```
+
+3. Instale as dependências:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Certifique-se de que o ChromeDriver está no PATH ou indique sua localização.
+
+## Uso
+
+1. Execute o script principal:
+   ```bash
+   python techTudoScraper.py
+   ```
+
+2. Siga as instruções no terminal:
+   - Escolha uma categoria de notícias a partir da lista exibida.
+   - Insira o número de notícias desejadas.
+
+3. Após a execução, o arquivo JSON com as notícias coletadas será salvo na pasta atual.
+
+## Estrutura do Projeto
+
+- `techTudoScraper.py`: Script principal para a coleta de notícias.
+- `techTudoScraper.log`: Arquivo de log com registros detalhados da execução.
+- `noticias_{categoria}.json`: Arquivo JSON gerado com os dados das notícias coletadas.
+
+## Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE). Consulte o arquivo para mais detalhes.
+
+## Observações
+
+- Certifique-se de que sua conexão com a internet esteja estável durante a execução.
+- Dependendo da quantidade de notícias, o processo pode levar algum tempo.
+- Caso o site TechTudo atualize sua estrutura, o script pode precisar de ajustes para continuar funcionando corretamente.
