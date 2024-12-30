@@ -60,7 +60,7 @@ def listar_categorias():
     response = requests.get(url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
-        for link in soup.find_all('a', class_=lambda x: x and x.startswith('sitemap-item')):
+        for link in soup.select('summary[class^="sitemap-item"] a'):
             if link.get('href') is not None:
                 categorias[link.get_text().strip().upper()] = link.get('href')
     logger.info(f'Quantidade de categorias encontradas: {len(categorias)}')
@@ -74,7 +74,7 @@ def carregar_mais_noticias(driver, qtd_noticias):
         EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[data-type="materia"]'))
     )
     while len(lista_noticias) < qtd_noticias:
-        logger.info(f'Carregando mais notícias... {len(lista_noticias)} de {qtd_noticias}')
+        print(f'\rCarregando mais notícias... {len(lista_noticias)} de {qtd_noticias}', end='', flush=True)
         try:
             botao_carregar_mais = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'div[class^="load-more"] a'))
@@ -103,6 +103,7 @@ def listar_noticias_categoria(categoria, categoria_url, qtd_noticias, chrome_opt
     noticias = {}
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(categoria_url)
+    time.sleep(10)
     
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, 'div[class^="load-more"] a'))
@@ -149,6 +150,8 @@ if __name__ == '__main__':
         categoria_escolhida_index = int(input('Escolha o número de uma categoria: '))
         categoria_escolhida = list(categorias.keys())[categoria_escolhida_index - 1]
         if categoria_escolhida:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            logger.info(f'Categoria escolhida: {categoria_escolhida}')
             qtd_noticias = int(input('Quantidade de notícias a serem capturadas: '))
             noticias = listar_noticias_categoria(categoria_escolhida, categorias[categoria_escolhida], qtd_noticias, chrome_options)
             salvar_json(noticias, f'noticias_{categoria_escolhida}.json')
