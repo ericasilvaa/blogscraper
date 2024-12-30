@@ -99,7 +99,7 @@ def carregar_mais_noticias(driver, qtd_noticias):
 
 # Funçao para listar as notícias de uma categoria
 def listar_noticias_categoria(categoria, categoria_url, qtd_noticias, chrome_options):
-    logger.info(f'Listando notícias da categoria: {categoria}')
+    logger.info(f'Listando notícias da categoria: {categoria} | {categoria_url}')
     noticias = {}
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(categoria_url)
