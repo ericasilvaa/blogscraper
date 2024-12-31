@@ -145,7 +145,7 @@ def salvar_dados_noticia(url_noticia):
             autor = soup.select_one('address[itemprop="author"] meta[itemprop="name"]').get('content')
             descricao = soup.select_one('h2[itemprop="alternativeHeadline"]').get_text(strip=True)
             lista_conteudo = soup.select('div[class*="content-text"]')
-            conteudo = ''.join([p.get_text() for p in lista_conteudo]).strip()
+            conteudo = '\n'.join([p.get_text().strip() for p in lista_conteudo]).strip()
             return {
                 'titulo': titulo,
                 'data_publicacao': data_publicacao,
@@ -181,7 +181,7 @@ if __name__ == '__main__':
                 dados_completos = salvar_dados_noticia(dados_noticia['link'])
                 if dados_completos:
                     noticias[id_noticia] = {**dados_noticia, **dados_completos}
-                    time.sleep(random.randint(3, 10))
+                    time.sleep(random.randint(3, 6))
             salvar_json(noticias, f'noticias_{categoria_escolhida}.json')
         else:
             logger.error("Categoria escolhida não é válida.")
